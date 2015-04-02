@@ -1,6 +1,12 @@
 # byte-unixbench
 Automatically exported from code.google.com/p/byte-unixbench
 
+<blockquote>
+I'm not the original author of this code. I do not claim owernship of this code by exporting to GitHub. All credits and rights goes to the original authors of this code. I'm not responsible for any consequences of running this on your system. Use at your own risk.
+
+This repo exists as mirror of the byte-unixbench code, since google-code is shutting down.
+</blockquote>
+
 **UnixBench** is the original BYTE UNIX benchmark suite, updated and revised by many people over the years.
 
 The purpose of UnixBench is to provide a basic indicator of the performance of a Unix-like system; hence, multiple tests are used to test various aspects of the system's performance. These test results are then compared to the scores from a baseline system to produce an index value, which is generally easier to handle than the raw scores. The entire set of index values is then combined to make an overall index for the system.
