@@ -21,6 +21,55 @@ Multi-CPU systems are handled. If your system has multiple CPUs, the default beh
 
 Do be aware that this is a system benchmark, not a CPU, RAM or disk benchmark. The results will depend not only on your hardware, but on your operating system, libraries, and even compiler.
 
+## Interpreting the Results
+
+Interpreting the results of these tests is tricky, and totally depends on
+what you're trying to measure.
+
+For example, are you trying to measure how fast your CPU is?  Or how good
+your compiler is?  Because these tests are all recompiled using your host
+system's compiler, the performance of the compiler will inevitably impact
+the performance of the tests.  Is this a problem?  If you're choosing a
+system, you probably care about its overall speed, which may well depend
+on how good its compiler is; so including that in the test results may be
+the right answer.  But you may want to ensure that the right compiler is
+used to build the tests.
+
+On the other hand, with the vast majority of Unix systems being x86 / PC
+compatibles, running Linux and the GNU C compiler, the results will tend
+to be more dependent on the hardware; but the versions of the compiler and
+OS can make a big difference.  (I measured a 50% gain between SUSE 10.1
+and OpenSUSE 10.2 on the same machine.)  So you may want to make sure that
+all your test systems are running the same version of the OS; or at least
+publish the OS and compuiler versions with your results.  Then again, it may
+be compiler performance that you're interested in.
+
+The C test is very dubious -- it tests the speed of compilation.  If you're
+running the exact same compiler on each system, OK; but otherwise, the
+results should probably be discarded.  A slower compilation doesn't say
+anything about the speed of your system, since the compiler may simply be
+spending more time to super-optimise the code, which would actually make it
+faster.
+
+This will be particularly true on architectures like IA-64 (Itanium etc.)
+where the compiler spends huge amounts of effort scheduling instructions
+to run in parallel, with a resultant significant gain in execution speed.
+
+Some tests are even more dubious in terms of host-dependency -- for example,
+the "dc" test uses the host's version of dc (a calculator program).  The
+version of this which is available can make a huge difference to the score,
+which is why it's not in the index group.  Read through the release notes
+for more on these kinds of issues.
+
+Another age-old issue is that of the benchmarks being too trivial to be
+meaningful.  With compilers getting ever smarter, and performing more
+wide-ranging flow path analyses, the danger of parts of the benchmarks
+simply being optimised out of existance is always present.
+
+All in all, the "index" and "gindex" tests (see above) are designed to
+give a reasonable measure of overall system performance; but the results
+of any test run should always be used with care.
+
 ## Usage
 ### Running the Tests
 
