@@ -77,6 +77,84 @@ switch to a minimal window setup (for example, log in to a "twm" session),
 so that randomly-churning background processes don't randomise the results
 too much.  This is particularly true for the graphics tests.
 
+## Notes about Multiple CPUs
+If your system has multiple CPUs, the default behaviour is to run the selected
+tests twice -- once with one copy of each test program running at a time,
+and once with N copies, where N is the number of CPUs.  (You can override
+this with the "-c" option; see "Detailed Usage" above.)  This is designed to
+allow you to assess:
+
+ - the performance of your system when running a single task
+ - the performance of your system when running multiple tasks
+ - the gain from your system's implementation of parallel processing
+
+The results, however, need to be handled with care.  Here are the results
+of two runs on a dual-processor system, one in single-processing mode, one
+dual-processing:
+
+```
+  Test                    Single     Dual   Gain
+  --------------------    ------   ------   ----
+  Dhrystone 2              562.5   1110.3    97%
+  Double Whetstone         320.0    640.4   100%
+  Execl Throughput         450.4    880.3    95%
+  File Copy 1024           759.4    595.9   -22%
+  File Copy 256            535.8    438.8   -18%
+  File Copy 4096          1261.8   1043.4   -17%
+  Pipe Throughput          481.0    979.3   104%
+  Pipe-based Switching     326.8   1229.0   276%
+  Process Creation         917.2   1714.1    87%
+  Shell Scripts (1)       1064.9   1566.3    47%
+  Shell Scripts (8)       1567.7   1709.9     9%
+  System Call Overhead     944.2   1445.5    53%
+  --------------------    ------   ------   ----
+  Index Score:             678.2   1026.2    51%
+```
+As expected, the heavily CPU-dependent tasks -- dhrystone, whetstone,
+execl, pipe throughput, process creation -- show close to 100% gain when
+running 2 copies in parallel.
+
+The Pipe-based Context Switching test measures context switching overhead
+by sending messages back and forth between 2 processes.  I don't know why
+it shows such a huge gain with 2 copies (ie. 4 processes total) running,
+but it seems to be consistent on my system.  I think this may be an issue
+with the SMP implementation.
+
+The System Call Overhead shows a lesser gain, presumably because it uses a
+lot of CPU time in single-threaded kernel code.  The shell scripts test with
+8 concurrent processes shows no gain -- because the test itself runs 8
+scripts in parallel, it's already using both CPUs, even when the benchmark
+is run in single-stream mode.  The same test with one process per copy
+shows a real gain.
+
+The filesystem throughput tests show a loss, instead of a gain, when
+multi-processing.  That there's no gain is to be expected, since the tests
+are presumably constrained by the throughput of the I/O subsystem and the
+disk drive itself; the drop in performance is presumably down to the
+increased contention for resources, and perhaps greater disk head movement.
+
+So what tests should you use, how many copies should you run, and how should
+you interpret the results?  Well, that's up to you, since it depends on
+what it is you're trying to measure.
+
+#### Implementation
+
+
+The multi-processing mode is implemented at the level of test iterations.
+During each iteration of a test, N slave processes are started using fork().
+Each of these slaves executes the test program using fork() and exec(),
+reads and stores the entire output, times the run, and prints all the
+results to a pipe.  The Run script reads the pipes for each of the slaves
+in turn to get the results and times.  The scores are added, and the times
+averaged.
+
+The result is that each test program has N copies running at once.  They
+should all finish at around the same time, since they run for constant time.
+
+If a test program itself starts off K multiple processes (as with the shell8
+test), then the effect will be that there are N * K processes running at
+once.  This is probably not very useful for testing multi-CPU performance.
+
 ## History
 **UnixBench** was first started in 1983 at Monash University, as a simple synthetic benchmarking application. It was then taken and expanded by **Byte Magazine**. Linux mods by **Jon Tombs**, and original authors **Ben Smith**, **Rick Grehan**, and **Tom Yager**.The tests compare Unix systems by comparing their results to a set of scores set by running the code on a benchmark system, which is a SPARCstation 20-61 (rated at 10.0).
 
