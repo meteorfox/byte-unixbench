@@ -16,28 +16,66 @@ Multi-CPU systems are handled. If your system has multiple CPUs, the default beh
 Do be aware that this is a system benchmark, not a CPU, RAM or disk benchmark. The results will depend not only on your hardware, but on your operating system, libraries, and even compiler.
 
 ## Usage
-To use Unixbench:
+### Running the Tests
 
-1. UnixBench from version 5.1 on has both system and graphics tests.
-   If you want to use the graphic tests, edit the Makefile and make sure
-   that the line "GRAPHIC_TESTS = defined" is not commented out; then check
-   that the "GL_LIBS" definition is OK for your system.  Also make sure
-   that the "x11perf" command is on your search path.
+All the tests are executed using the "Run" script in the top-level directory.
 
-   If you don't want the graphics tests, then comment out the
-   "GRAPHIC_TESTS = defined" line.  Note: comment it out, don't
-   set it to anything.
+The simplest way to generate results is with the commmand:
+    ./Run
 
-2. Do "make".
+This will run a standard "index" test (see "The BYTE Index" below), and
+save the report in the "results" directory, with a filename like
+    hostname-2007-09-23-01
+An HTML version is also saved.
 
-3. Do "Run" to run the system test; "Run graphics" to run the graphics
-   tests; "Run gindex" to run both.
+If you want to generate both the basic system index and the graphics index,
+then do:
+    ./Run gindex
 
-You will need perl, as Run is written in perl.
+If your system has more than one CPU, the tests will be run twice -- once
+with a single copy of each test running at once, and once with N copies,
+where N is the number of CPUs.  Some categories of tests, however (currently
+the graphics tests) will only run with a single copy.
 
-For more information on using the tests, read "USAGE".
+Since the tests are based on constant time (variable work), a "system"
+run usually takes about 29 minutes; the "graphics" part about 18 minutes.
+A "gindex" run on a dual-core machine will do 2 "system" passes (single-
+and dual-processing) and one "graphics" run, for a total around one and
+a quarter hours.
 
-For information on adding tests into the benchmark, see "WRITING_TESTS".
+### Detailed Usage
+The Run script takes a number of options which you can use to customise a
+test, and you can specify the names of the tests to run.  The full usage
+is:
+
+    Run [ -q | -v ] [-i <n> ] [-c <n> [-c <n> ...]] [test ...]
+
+The option flags are:
+
+  -q            Run in quiet mode.
+  -v            Run in verbose mode.
+  -i <count>    Run <count> iterations for each test -- slower tests
+                use <count> / 3, but at least 1.  Defaults to 10 (3 for
+                slow tests).
+  -c <n>        Run <n> copies of each test in parallel.
+
+The -c option can be given multiple times; for example:
+
+    ./Run -c 1 -c 4
+
+will run a single-streamed pass, then a 4-streamed pass.  Note that some
+tests (currently the graphics tests) will only run in a single-streamed pass.
+
+The remaining non-flag arguments are taken to be the names of tests to run.
+The default is to run "index".  See "Tests" below.
+
+When running the tests, I do *not* recommend switching to single-user mode
+("init 1").  This seems to change the results in ways I don't understand,
+and it's not realistic (unless your system will actually be running in this
+mode, of course).  However, if using a windowing system, you may want to
+switch to a minimal window setup (for example, log in to a "twm" session),
+so that randomly-churning background processes don't randomise the results
+too much.  This is particularly true for the graphics tests.
 
 ## History
 **UnixBench** was first started in 1983 at Monash University, as a simple synthetic benchmarking application. It was then taken and expanded by **Byte Magazine**. Linux mods by **Jon Tombs**, and original authors **Ben Smith**, **Rick Grehan**, and **Tom Yager**.The tests compare Unix systems by comparing their results to a set of scores set by running the code on a benchmark system, which is a SPARCstation 20-61 (rated at 10.0).
