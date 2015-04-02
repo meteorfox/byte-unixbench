@@ -15,6 +15,30 @@ Multi-CPU systems are handled. If your system has multiple CPUs, the default beh
 
 Do be aware that this is a system benchmark, not a CPU, RAM or disk benchmark. The results will depend not only on your hardware, but on your operating system, libraries, and even compiler.
 
+## Usage
+To use Unixbench:
+
+1. UnixBench from version 5.1 on has both system and graphics tests.
+   If you want to use the graphic tests, edit the Makefile and make sure
+   that the line "GRAPHIC_TESTS = defined" is not commented out; then check
+   that the "GL_LIBS" definition is OK for your system.  Also make sure
+   that the "x11perf" command is on your search path.
+
+   If you don't want the graphics tests, then comment out the
+   "GRAPHIC_TESTS = defined" line.  Note: comment it out, don't
+   set it to anything.
+
+2. Do "make".
+
+3. Do "Run" to run the system test; "Run graphics" to run the graphics
+   tests; "Run gindex" to run both.
+
+You will need perl, as Run is written in perl.
+
+For more information on using the tests, read "USAGE".
+
+For information on adding tests into the benchmark, see "WRITING_TESTS".
+
 ## History
 **UnixBench** was first started in 1983 at Monash University, as a simple synthetic benchmarking application. It was then taken and expanded by **Byte Magazine**. Linux mods by **Jon Tombs**, and original authors **Ben Smith**, **Rick Grehan**, and **Tom Yager**.The tests compare Unix systems by comparing their results to a set of scores set by running the code on a benchmark system, which is a SPARCstation 20-61 (rated at 10.0).
 
