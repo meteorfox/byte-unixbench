@@ -7,6 +7,8 @@ I'm not the original author of this code. I do not claim owernship of this code 
 This repo exists as mirror of the byte-unixbench code, since google-code is shutting down.
 </blockquote>
 
+**Note**: If you want to run with the last commit that was published while it was hosted on code.gooogle.com, use tag v5.1.3
+
 **UnixBench** is the original BYTE UNIX benchmark suite, updated and revised by many people over the years.
 
 The purpose of UnixBench is to provide a basic indicator of the performance of a Unix-like system; hence, multiple tests are used to test various aspects of the system's performance. These test results are then compared to the scores from a baseline system to produce an index value, which is generally easier to handle than the raw scores. The entire set of index values is then combined to make an overall index for the system.
